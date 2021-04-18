@@ -1,0 +1,7 @@
+sudo mount -t vboxsf UbuntuShare SHARE
+
+
+1. load_twits.py
+2. load_twits_odb.py
+3. load_twits_odb_producer.py
+4. load_twits_dw_consumer.py

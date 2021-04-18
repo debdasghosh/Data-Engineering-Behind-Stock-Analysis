@@ -1,0 +1,13 @@
+DROP SCHEMA IF EXISTS `odb` ;
+CREATE SCHEMA IF NOT EXISTS `odb` DEFAULT CHARACTER SET utf8 ;
+USE `odb` ;
+DROP TABLE IF EXISTS `odb`.`location` ;
+CREATE TABLE IF NOT EXISTS `odb`.`location` (  `location_id` INT NOT NULL AUTO_INCREMENT,  `city` VARCHAR(100) NOT NULL,  `state` VARCHAR(100) NOT NULL,  PRIMARY KEY (`location_id`))ENGINE = InnoDB;
+DROP TABLE IF EXISTS `odb`.`company` ;
+CREATE TABLE IF NOT EXISTS `odb`.`company` (  `stock_symbol` VARCHAR(5) NOT NULL,  `company_name` VARCHAR(100) NOT NULL,  `location_id` INT NOT NULL,  `sector` VARCHAR(100) NOT NULL,  `industry` VARCHAR(100) NOT NULL,  PRIMARY KEY (`stock_symbol`),  INDEX `fk_location_id_idx` (`location_id` ASC) VISIBLE,  CONSTRAINT `fk_location_id`    FOREIGN KEY (`location_id`)    REFERENCES `odb`.`location` (`location_id`)    ON DELETE NO ACTION    ON UPDATE NO ACTION)ENGINE = InnoDB;
+DROP TABLE IF EXISTS `odb`.`stock_sale` ;
+CREATE TABLE IF NOT EXISTS `odb`.`stock_sale` (  `stock_sale_id` INT NOT NULL AUTO_INCREMENT,  `stock_symbol` VARCHAR(5) NOT NULL,  `date` DATETIME NOT NULL,  `open` DECIMAL(11,6) NOT NULL,  `close` DECIMAL(11,6) NOT NULL,  `high` DECIMAL(11,6) NOT NULL,  `low` DECIMAL(11,6) NOT NULL,  `volume` INT NOT NULL,  PRIMARY KEY (`stock_sale_id`),  INDEX `fk_s_stock_symbol_idx` (`stock_symbol` ASC) VISIBLE,  CONSTRAINT `fk_s_stock_symbol`    FOREIGN KEY (`stock_symbol`)    REFERENCES `odb`.`company` (`stock_symbol`)    ON DELETE NO ACTION    ON UPDATE NO ACTION)ENGINE = InnoDB;
+DROP TABLE IF EXISTS `odb`.`company_revenue` ;
+CREATE TABLE IF NOT EXISTS `odb`.`company_revenue` (  `company_revenue_id` INT NOT NULL AUTO_INCREMENT,  `stock_symbol` VARCHAR(5) NOT NULL,  `quarter` TINYINT(1) NOT NULL,  `year` SMALLINT(4) NOT NULL,  `revenue` DECIMAL(6,2) NOT NULL,  PRIMARY KEY (`company_revenue_id`),  INDEX `fk_r_stock_symbol_idx` (`stock_symbol` ASC) VISIBLE,  CONSTRAINT `fk_r_stock_symbol`    FOREIGN KEY (`stock_symbol`)    REFERENCES `odb`.`company` (`stock_symbol`)    ON DELETE CASCADE    ON UPDATE CASCADE)ENGINE = InnoDB;
+DROP TABLE IF EXISTS `odb`.`stocktwits` ;
+CREATE TABLE IF NOT EXISTS `odb`.`stocktwits` ( `twits_id` INT NOT NULL AUTO_INCREMENT, `tweet_text` text NOT NULL, `created_at` varchar(100) NOT NULL, `basic_sentiment` varchar(100) NOT NULL, `stock_symbol` VARCHAR(5) NOT NULL, `stock_title` varchar(100) NOT NULL,  PRIMARY KEY (`twits_id`),  INDEX `fk_t_stock_symbol_idx` (`stock_symbol` ASC) VISIBLE,  CONSTRAINT `fk_t_stock_symbol`    FOREIGN KEY (`stock_symbol`)    REFERENCES `odb`.`company` (`stock_symbol`)    ON DELETE CASCADE    ON UPDATE CASCADE)ENGINE = InnoDB;
