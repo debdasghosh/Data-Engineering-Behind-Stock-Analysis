@@ -7,6 +7,8 @@ To generate datasets run the following R codes as per the order:
 3. StatistaRevenueCleaning.R --> For extracting data from excel files downloaded from Statista and merge into a single CSV file
 4. StockTwitsExtraction.R --> For extracting data using StockTwits API
 
+Note: Do change the path and configurations
+
 Then in VM run the docker compose file:
 sudo docker-compose up -d
 
