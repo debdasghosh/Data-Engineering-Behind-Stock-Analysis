@@ -97,8 +97,13 @@ def load_dw():
         odb_cursor.execute("SELECT CASE WHEN MONTH(date) >= 10 THEN 4 WHEN MONTH(date) >= 7 THEN 3 WHEN MONTH(date) >= 4 THEN 2 ELSE 1 END, YEAR(date), c.stock_symbol, c.location_id, r.revenue, SUM(open), SUM(close), SUM(high), SUM(low), sum(volume) FROM stock_sale s, company c, company_revenue r WHERE s.stock_symbol = c.stock_symbol AND r.stock_symbol = c.stock_symbol AND r.year = YEAR(date) AND r.quarter = (CASE WHEN MONTH(date) >= 10 THEN 4 WHEN MONTH(date) >= 7 THEN 3 WHEN MONTH(date) >= 4 THEN 2 ELSE 1 END) GROUP BY CASE WHEN MONTH(date) >= 10 THEN 4 WHEN MONTH(date) >= 7 THEN 3 WHEN MONTH(date) >= 4 THEN 2 ELSE 1 END, YEAR(date), c.stock_symbol, c.location_id, r.revenue")
         q_sales = [[find(r[:2], quarters, lambda x, y: x[0] == y[1] and x[1] == y[2])[0]] + list(r)[2:] for r in odb_cursor.fetchall()]
         dw_cursor.executemany(QUARTERLY_QUERY, q_sales)
-
         print("Successfully loaded quarterly sales information...")
+
+        # Summary Tables
+        dw_cursor.execute("INSERT INTO `agg_stock_volume` SELECT NULL, `date_id`, `location_id`, SUM(`volume`) FROM `fact_daily_stock` GROUP BY `location_id`,`date_id`;")
+        dw_cursor.execute("INSERT INTO `agg_quaterly_revenue` SELECT NULL, `quarter_id`, `stock_symbol`, SUM(`revenue`) FROM `fact_quarterly_stock` GROUP BY `stock_symbol`,`quarter_id`;")
+        print("Successfully loaded summary tables...")
+        
 
         # Commit changes to the data warehouse
         dw_conn.commit()
